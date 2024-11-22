@@ -1,9 +1,10 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import fs from 'fs';
 
-const require = createRequire(import.meta.url)
+createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -66,3 +67,13 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(createWindow)
+
+ipcMain.handle('read-courses-file', () => {
+  const filePath = path.join(__dirname, '../src/data/Courses.csv');
+  return fs.readFileSync(filePath, 'utf8');
+})
+
+ipcMain.handle('read-classrooms-file', () => {
+  const filePath = path.join(__dirname, '../src/data/ClassroomCapacity.csv');
+  return fs.readFileSync(filePath, 'utf8');
+})
