@@ -6,7 +6,7 @@ interface Course {
   TimeToStart: string,
   DurationInLectureHours: string,
   Lecturer: string,
-  Students: string
+  Students: string[]
 }
 
 interface Classroom {
@@ -22,8 +22,23 @@ function App() {
     window.ipcRenderer.invoke('read-courses-file').then((fileContent: string) => {
       Papa.parse(fileContent, {
         header: true,
-        complete: (results: Papa.ParseResult<Course>) => {
-          setCourses(results.data);
+        delimiter: ";",
+        transform: (value) => value.trim(),
+        complete: (results) => {
+          const processedData = (results.data as Record<string, string>[]).map((row: Record<string, string>) => {
+            const courseData: Course = {
+              Course: row.Course,
+              TimeToStart: row.TimeToStart,
+              DurationInLectureHours: row.DurationInLectureHours,
+              Lecturer: row.Lecturer,
+              Students: Object.values(row)
+                .slice(4)
+                .filter(value => value !== "")
+                .map(value => value as string)
+            };
+            return courseData;
+          });
+          setCourses(processedData);
         },
       });
     });
@@ -40,7 +55,6 @@ function App() {
 
   console.log(courses);
   console.log(classrooms);
-
 
   return (
     <div className="bg-sky-500 font-bold text-2xl flex justify-around">
