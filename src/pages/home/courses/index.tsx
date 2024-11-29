@@ -1,4 +1,4 @@
-import { useCourses } from "../../hooks/useCourses";
+import { useCourses } from "../../../hooks/useCourses";
 import { Zoom } from "react-awesome-reveal";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import { useState } from "react";

@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IeuLogo from "../assets/ieu-logo.png"
+import IeuLogo from "../../../assets/ieu-logo.png";
 
 export default function AppBarComponent() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);

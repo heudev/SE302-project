@@ -1,6 +1,6 @@
-import { useClassrooms } from "../hooks/useClassrooms";
+import { useClassrooms } from "../../../hooks/useClassrooms";
 
-export default function Classroom() {
+export default function Classrooms() {
     const { classrooms, error } = useClassrooms();
 
     if (error) {
