@@ -1,11 +1,13 @@
+import AppBar from "./components/AppBar"
 import Courses from "./components/Courses"
-import Classroom from "./components/Classrooms"
 
 export default function App() {
   return (
-    <div className="flex gap-5">
-      <Courses />
-      <Classroom />
+    <div className="h-screen flex flex-col">
+      <AppBar />
+      <div className="flex-grow flex justify-center">
+        <Courses />
+      </div>
     </div>
   )
 }
