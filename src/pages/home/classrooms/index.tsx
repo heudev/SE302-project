@@ -4,7 +4,8 @@ export default function Classrooms() {
     const { classrooms, error } = useClassrooms();
 
     if (error) {
-        return <div>Error loading classrooms: {error.message}</div>;
+        console.log(error);
+        return <div>Error loading classrooms: {error}</div>;
     }
 
     console.log(classrooms);

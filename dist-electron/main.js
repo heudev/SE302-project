@@ -41,12 +41,22 @@ app.on("activate", () => {
 });
 app.whenReady().then(createWindow);
 ipcMain.handle("read-courses-file", () => {
-  const filePath = path.join(__dirname, "../src/data/Courses.csv");
-  return fs.readFileSync(filePath, "utf8");
+  try {
+    const filePath = path.join(app.getAppPath(), "..", "..", "..", "..", "data", "Courses.csv");
+    return fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.log("No Courses.csv file found in the local file system. Attempting to fetch from public/data/Courses.csv...");
+    return null;
+  }
 });
 ipcMain.handle("read-classrooms-file", () => {
-  const filePath = path.join(__dirname, "../src/data/ClassroomCapacity.csv");
-  return fs.readFileSync(filePath, "utf8");
+  try {
+    const filePath = path.join(app.getAppPath(), "..", "..", "..", "..", "data", "ClassroomCapacity.csv");
+    return fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.log("No ClassroomCapacity.csv file found in the local file system. Attempting to fetch from public/data/ClassroomCapacity.csv...");
+    return null;
+  }
 });
 export {
   MAIN_DIST,

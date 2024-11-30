@@ -10,7 +10,8 @@ export default function Courses() {
     const [searchTerm, setSearchTerm] = useState('');
 
     if (error) {
-        return <div>Error loading courses: {error.message}</div>;
+        console.log(error);
+        return <div>Error loading courses: {error}</div>;
     }
 
     console.log(courses);
