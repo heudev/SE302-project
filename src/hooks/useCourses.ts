@@ -28,8 +28,23 @@ const useCourses = () => {
         const parseCsvData = (data: string) => {
             Papa.parse<Course>(data, {
                 header: true,
+                delimiter: ";",
+                transform: (value) => value.trim(),
                 complete: (results) => {
-                    setCourses(results.data);
+                    const processedData = (results.data as unknown as Record<string, string>[]).map((row: Record<string, string>) => {
+                        const courseData: Course = {
+                            Course: row.Course,
+                            TimeToStart: row.TimeToStart,
+                            DurationInLectureHours: row.DurationInLectureHours,
+                            Lecturer: row.Lecturer,
+                            Students: Object.values(row)
+                                .slice(4)
+                                .filter(value => value !== "")
+                                .map(value => value as string)
+                        };
+                        return courseData;
+                    });
+                    setCourses(processedData);
                 },
                 error: () => {
                     setError("An error occurred while parsing the CSV data.");
