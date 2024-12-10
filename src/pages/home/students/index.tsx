@@ -7,6 +7,15 @@ interface Student {
     Name: string;
 }
 
+interface Course {
+    Course: string;
+    TimeToStart: string;
+    DurationInLectureHours: string;
+    Lecturer: string;
+    Students: string[];
+    Classroom?: string;
+}
+
 export default function Students() {
     const [students, setStudents] = useState<Student[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +27,7 @@ export default function Students() {
                 const db = await openDB("coursesDB", 1);
                 const courses = await db.getAll("courses");
 
-                const allStudents = courses.flatMap((course: any) => course.Students);
+                const allStudents = courses.flatMap((course: Course) => course.Students);
                 const distinctStudents = Array.from(new Set(allStudents)).map((name) => ({ Name: name }));
 
                 setStudents(distinctStudents);

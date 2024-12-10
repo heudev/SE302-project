@@ -8,10 +8,10 @@ import { StudentsList } from "./studentsList";
 import { WeeklyTable } from "./weeklyTable";
 
 export default function CoursePage() {
-    const { courseId } = useParams(); 
-    const navigate = useNavigate(); 
+    const { courseId } = useParams();
+    const navigate = useNavigate();
     const { courses, error } = useCourses();
-    const [activeTab, setActiveTab] = useState(0); 
+    const [activeTab, setActiveTab] = useState(0);
 
     if (error) {
         console.log(error);
@@ -28,7 +28,7 @@ export default function CoursePage() {
         <Box sx={{ padding: 3, maxWidth: 800, margin: '0 auto' }}>
             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
                 <CardContent>
-                    
+
                     <IconButton onClick={() => navigate("/")} sx={{ mb: 2 }}>
                         <ArrowBackIcon />
                         <Typography variant="button" sx={{ ml: 1 }}>
@@ -45,15 +45,15 @@ export default function CoursePage() {
 
                     <Divider sx={{ my: 2 }} />
 
-                    
+
                     <CourseInfo course={course} />
 
                     <Divider sx={{ my: 2 }} />
 
-                    
+
                     <Tabs
                         value={activeTab}
-                        onChange={(event, newValue) => setActiveTab(newValue)}
+                        onChange={(_, newValue) => setActiveTab(newValue)}
                         variant="fullWidth"
                         sx={{
                             borderBottom: 1,
@@ -64,7 +64,7 @@ export default function CoursePage() {
                         <Tab label="Weekly Table" />
                     </Tabs>
 
-                    
+
                     {activeTab === 0 && <StudentsList students={course.Students} />}
                     {activeTab === 1 && <WeeklyTable />}
                 </CardContent>
