@@ -1,6 +1,7 @@
 import { createHashRouter } from "react-router-dom";
 import MainLayout from "../layouts/main";
 import Home from "../pages/home";
+import Course from "../pages/course"; 
 
 const routes = createHashRouter([
     {
@@ -12,8 +13,8 @@ const routes = createHashRouter([
                 element: <Home />
             },
             {
-                path: '/coursePage/:courseId', // Add route for coursePage with courseId param
-                // element: <CoursePage /> 
+                path: '/coursePage/:courseId', 
+                element: <Course />  
             }
             /* {
                 path: 'explore',
