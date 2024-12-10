@@ -1,17 +1,39 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useCourses } from "../../../hooks/useCourses";
 import { Box, Typography, Card, CardContent, IconButton, Tabs, Tab, Divider } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CourseInfo } from "./courseInfo";
 import { StudentsList } from "./studentsList";
 import { WeeklyTable } from "./weeklyTable";
+import { getAllItems } from "../../../database/tables/courses";
+interface Course {
+    Course: string;
+    TimeToStart: string;
+    DurationInLectureHours: string;
+    Lecturer: string;
+    Students: string[];
+    Classroom?: string;
+}
 
 export default function CoursePage() {
     const { courseId } = useParams();
     const navigate = useNavigate();
-    const { courses, error } = useCourses();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState(0);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const courses = await getAllItems();
+                setCourses(courses);
+            } catch (error) {
+                setError('Error loading courses');
+                console.error(error);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     if (error) {
         console.log(error);

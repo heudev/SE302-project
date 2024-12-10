@@ -1,19 +1,44 @@
-import { useClassrooms } from "../../../hooks/useClassrooms";
+import { useEffect, useState } from "react";
 import { Zoom } from "react-awesome-reveal";
 import { Box, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip } from "@mui/material";
-import { useState } from "react";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import { getAllItems as getAllItems } from "../../../database/tables/classrooms";
+
+interface Classroom {
+    Classroom: string;
+    Capacity: string;
+}
 
 export default function Classrooms() {
-    const { classrooms, error } = useClassrooms();
+    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const data = await getAllItems();
+                console.log("dataaa", data);
+                setClassrooms(data);
+            } catch (err) {
+                setError('Error loading courses');
+                console.error(err);
+            }
+        };
+
+        const timer = setTimeout(() => {
+            fetchCourses();
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     if (error) {
         console.log(error);
         return <div>Error loading classrooms: {error}</div>;
     }
 
-    console.log(classrooms);
+    console.log("asdasd", classrooms);
 
     // Filter
     const filteredClassrooms = classrooms.filter(classroom =>
@@ -33,18 +58,16 @@ export default function Classrooms() {
                 />
                 <Divider />
                 <List sx={{ overflowY: 'auto', height: 500 }}>
-                    {filteredClassrooms.map((classroom) => (
+                    {filteredClassrooms.map((classroom, index) => (
                         <ListItem
-                            key={classroom.Classroom}
+                            key={`${classroom.Classroom}-${index}`} // Ensure unique key
                             disablePadding
                             className="shadow-md"
                         >
                             <ListItemButton sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                
                                 <ListItemText
                                     primary={classroom.Classroom}
                                 />
-                                
                                 <Chip
                                     icon={<MeetingRoomIcon />}
                                     label={`Capacity: ${classroom.Capacity}`}

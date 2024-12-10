@@ -37,17 +37,16 @@ export function CourseInfo({ course }: { course: CourseInfoProps }) {
             </div>
 
             {/* Classroom */}
-            {course.Classroom && (
-                <div className="w-full">
-                    <Chip
-                        icon={<ClassroomIcon />}
-                        label={`Classroom: ${course.Classroom}`}
-                        color="default"
-                        className="w-full"
-                        variant="outlined"
-                    />
-                </div>
-            )}
+
+            <div className="w-full">
+                <Chip
+                    icon={<ClassroomIcon />}
+                    label={`Classroom: ${course.Classroom}`}
+                    color="default"
+                    className="w-full"
+                    variant="outlined"
+                />
+            </div>
 
             {/* Students */}
             <div className="w-full">

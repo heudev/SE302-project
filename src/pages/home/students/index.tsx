@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { openDB } from "idb";
+import { getAllItems } from "../../../database/tables/courses";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import { Zoom } from "react-awesome-reveal";
 
@@ -24,12 +24,9 @@ export default function Students() {
     useEffect(() => {
         const fetchDistinctStudents = async () => {
             try {
-                const db = await openDB("coursesDB", 1);
-                const courses = await db.getAll("courses");
-
+                const courses = await getAllItems();
                 const allStudents = courses.flatMap((course: Course) => course.Students);
                 const distinctStudents = Array.from(new Set(allStudents)).map((name) => ({ Name: name }));
-
                 setStudents(distinctStudents);
             } catch (err) {
                 console.error("Error fetching students:", err);
@@ -38,16 +35,16 @@ export default function Students() {
         };
 
         fetchDistinctStudents();
-    }, []);
+    }, [students]);
 
     if (error) {
-        console.log(error);
         return <div>Error loading students: {error}</div>;
     }
 
     const filteredStudents = students.filter(student =>
         student.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     return (
         <Zoom style={{ width: '100%', maxWidth: 380 }} delay={700} triggerOnce={true}>

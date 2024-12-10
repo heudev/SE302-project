@@ -1,10 +1,9 @@
-import { useCourses } from "../../../hooks/useCourses";
+import { useEffect, useState } from "react";
 import { Zoom } from "react-awesome-reveal";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
-import { useState } from "react";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useNavigate } from "react-router-dom";
-
+import { getAllItems } from "../../../database/tables/courses";
 
 type Course = {
     Course: string;
@@ -16,9 +15,24 @@ type Course = {
 };
 
 export default function Courses() {
-    const { courses, error } = useCourses();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const courses = await getAllItems();
+                setCourses(courses);
+            } catch (err) {
+                setError('Error loading courses');
+                console.error(err);
+            }
+        };
+        const timer = setTimeout(fetchCourses, 1000);
+        return () => clearTimeout(timer);
+    }, []);
 
     if (error) {
         console.log(error);
@@ -48,15 +62,15 @@ export default function Courses() {
                 />
                 <Divider />
                 <List sx={{ overflowY: 'auto', height: 500 }}>
-                    {filteredCourses.map((course: Course) => (
-                        <Collapse key={course.Course} in={true}>
+                    {filteredCourses.map((course: Course, index) => (
+                        <Collapse key={`${course.Course}-${index}`} in={true}>
                             <ListItem
                                 disablePadding
                                 className="shadow-md"
                             >
                                 <ListItemButton
                                     sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
-                                    onClick={() => handleCourseClick(course.Course)} 
+                                    onClick={() => handleCourseClick(course.Course)}
                                 >
                                     {/* Left side */}
                                     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -79,7 +93,7 @@ export default function Courses() {
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         alignItems: 'center',
-                                        gap: 1 
+                                        gap: 1
                                     }}>
                                         <Chip
                                             deleteIcon={<AccessTimeIcon />}
