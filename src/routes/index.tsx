@@ -11,6 +11,10 @@ const routes = createHashRouter([
                 index: true,
                 element: <Home />
             },
+            {
+                path: '/coursePage/:courseId', // Add route for coursePage with courseId param
+                // element: <CoursePage /> 
+            }
             /* {
                 path: 'explore',
                 element: <Explore />

@@ -3,23 +3,37 @@ import { Zoom } from "react-awesome-reveal";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import { useState } from "react";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { useNavigate } from "react-router-dom";
+
+
+type Course = {
+    Course: string;
+    Lecturer: string;
+    TimeToStart: string;
+    DurationInLectureHours: string;
+    Classroom?: string;
+    Students: string[];
+};
 
 export default function Courses() {
     const { courses, error } = useCourses();
-
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     if (error) {
         console.log(error);
         return <div>Error loading courses: {error}</div>;
     }
 
-    console.log(courses);
-
-    const filteredCourses = courses.filter(course =>
+    const filteredCourses = courses.filter((course: Course) =>
         course.Course.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.Lecturer.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    //route navigation
+    const handleCourseClick = (courseId: string) => {
+        navigate(`/coursePage/${courseId}`);
+    };
 
     return (
         <Zoom style={{ width: '100%', maxWidth: 380 }} delay={700} triggerOnce={true}>
@@ -34,33 +48,54 @@ export default function Courses() {
                 />
                 <Divider />
                 <List sx={{ overflowY: 'auto', height: 500 }}>
-                    {filteredCourses.map((course) => (
+                    {filteredCourses.map((course: Course) => (
                         <Collapse key={course.Course} in={true}>
                             <ListItem
                                 disablePadding
                                 className="shadow-md"
-                                secondaryAction={
-                                    <Chip
-                                        deleteIcon={<AccessTimeIcon />}
-                                        label={<div>{course.TimeToStart}</div>}
-                                        color="primary"
-                                        variant="outlined"
-                                        className="w-36"
-                                    />
-                                }
                             >
-                                <ListItemButton>
-                                    <Tooltip title={`Duration in lecture hours`} arrow>
-                                        <Chip
-                                            className='me-2'
-                                            color="secondary"
-                                            label={course.DurationInLectureHours}
+                                <ListItemButton
+                                    sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+                                    onClick={() => handleCourseClick(course.Course)} 
+                                >
+                                    {/* Left side */}
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                        <Tooltip title={`Duration in lecture hours`} arrow>
+                                            <Chip
+                                                className='me-2'
+                                                color="secondary"
+                                                label={course.DurationInLectureHours}
+                                            />
+                                        </Tooltip>
+                                        <ListItemText
+                                            primary={course.Course}
+                                            secondary={course.Lecturer}
                                         />
-                                    </Tooltip>
-                                    <ListItemText
-                                        primary={course.Course}
-                                        secondary={course.Lecturer}
-                                    />
+                                    </Box>
+
+                                    {/* Right side */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        gap: 1 
+                                    }}>
+                                        <Chip
+                                            deleteIcon={<AccessTimeIcon />}
+                                            label={course.TimeToStart}
+                                            color="primary"
+                                            variant="outlined"
+                                            className="w-36"
+                                        />
+                                        {course.Classroom && (
+                                            <Chip
+                                                label={course.Classroom}
+                                                color="secondary"
+                                                className="w-36"
+                                            />
+                                        )}
+                                    </Box>
                                 </ListItemButton>
                             </ListItem>
                         </Collapse>
