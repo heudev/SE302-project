@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Card, CardContent, Divider, IconButton, Tabs, Tab } from "@mui/material";
+import { Box, Typography, Card, CardContent, Divider, IconButton, Tabs, Tab, Stack } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HomeIcon from '@mui/icons-material/Home';
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { ClassroomInterface } from "../../../store/classrooms";
@@ -20,22 +21,18 @@ export default function ClassroomPage() {
     // Filter courses for the specific classroom
     const classroomCourses = courses.filter(course => course.Classroom === classroomId);
 
-    // Navigate back to the homepage
-    const handleBack = () => {
-        navigate("/");  // Navigate to the homepage
-    };
-
     return (
         <Box sx={{ padding: 3, maxWidth: 800, margin: '0 auto' }}>
             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
                 <CardContent>
-                    {/* Back to Homepage Button */}
-                    <IconButton onClick={handleBack} sx={{ mb: 2 }}>
-                        <ArrowBackIcon />
-                        <Typography variant="button" sx={{ ml: 1 }}>
-                            Back to Homepage
-                        </Typography>
-                    </IconButton>
+                    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                        <IconButton onClick={() => navigate(-1)}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <IconButton onClick={() => navigate("/")}>
+                            <HomeIcon />
+                        </IconButton>
+                    </Stack>
 
                     <Typography variant="h3" gutterBottom>
                         {classroom?.Classroom}

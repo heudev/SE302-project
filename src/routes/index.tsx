@@ -22,7 +22,7 @@ const routes = createHashRouter([
                 element: <Classroom />
             },
             {
-                path: '/student/:studentName', // Add the new route for individual student pages
+                path: '/student/:studentName', 
                 element: <Student />
             }
             /* {

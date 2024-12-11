@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Card, CardContent, IconButton, Tabs, Tab, Divider } from "@mui/material";
+import { Box, Typography, Card, CardContent, IconButton, Tabs, Tab, Divider, Stack } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HomeIcon from '@mui/icons-material/Home';
 import { useState } from "react";
 import StudentInfo from "./studentInfo";
 import CoursesList from "./coursesList";
@@ -14,12 +15,14 @@ export default function StudentPage() {
         <Box sx={{ padding: 3, maxWidth: 800, margin: '0 auto' }}>
             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
                 <CardContent>
-                    <IconButton onClick={() => navigate("/")} sx={{ mb: 2 }}>
-                        <ArrowBackIcon />
-                        <Typography variant="button" sx={{ ml: 1 }}>
-                            Back to Homepage
-                        </Typography>
-                    </IconButton>
+                    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                        <IconButton onClick={() => navigate(-1)}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <IconButton onClick={() => navigate("/")}>
+                            <HomeIcon />
+                        </IconButton>
+                    </Stack>
 
                     <Typography variant="h3" gutterBottom>
                         {studentName}
