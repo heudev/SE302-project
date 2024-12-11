@@ -33,7 +33,7 @@ export default function Home() {
 
 
     return (
-        <div className="flex-grow flex justify-center space-x-4">
+        <div className="flex-grow flex-wrap mt-5 lg:mt-0 pb-5 gap-5 flex justify-center md:space-x-4">
             <Courses />
             <Classrooms />
             <Students />
