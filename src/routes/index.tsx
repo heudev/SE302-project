@@ -2,7 +2,7 @@ import { createHashRouter } from "react-router-dom";
 import MainLayout from "../layouts/main";
 import Home from "../pages/home";
 import Course from "../pages/course"; 
-
+import Classroom from "../pages/classroom"; 
 const routes = createHashRouter([
     {
         path: '/',
@@ -15,6 +15,10 @@ const routes = createHashRouter([
             {
                 path: '/coursePage/:courseId', 
                 element: <Course />  
+            },
+            {
+                path: '/classroom/:classroomId', // This should be the correct route
+                element: <Classroom />
             }
             /* {
                 path: 'explore',
