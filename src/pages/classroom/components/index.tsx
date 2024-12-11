@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ClassroomInterface } from "../../../store/classrooms";
 import { CourseInterface } from "../../../store/courses";
 import { CourseList } from "./courseList";  // Import the CourseList component
+import { ClassroomInfo } from "./classroomInfo";  // Add this import
 
 export default function ClassroomPage() {
     const { classroomId } = useParams();  // Get the classroomId from the URL
@@ -36,13 +37,16 @@ export default function ClassroomPage() {
                         </Typography>
                     </IconButton>
 
-                    {/* Classroom Information */}
                     <Typography variant="h3" gutterBottom>
-                        Classroom: {classroom?.Classroom}
+                        {classroom?.Classroom}
                     </Typography>
                     <Typography variant="h6" color="textSecondary" gutterBottom>
-                        Capacity: {classroom?.Capacity} students
+                        Classroom Details
                     </Typography>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    {classroom && <ClassroomInfo classroom={classroom} />}
 
                     <Divider sx={{ my: 2 }} />
 
