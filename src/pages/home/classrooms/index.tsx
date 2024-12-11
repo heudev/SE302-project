@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Zoom } from "react-awesome-reveal";
 import { Box, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip } from "@mui/material";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import { getAllItems as getAllItems } from "../../../database/tables/classrooms";
 
 interface Classroom {
     Classroom: string;
@@ -10,37 +10,9 @@ interface Classroom {
 }
 
 export default function Classrooms() {
-    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const classrooms = useSelector((state: { classrooms: Classroom[] }) => state.classrooms);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const data = await getAllItems();
-                console.log("dataaa", data);
-                setClassrooms(data);
-            } catch (err) {
-                setError('Error loading courses');
-                console.error(err);
-            }
-        };
-
-        const timer = setTimeout(() => {
-            fetchCourses();
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (error) {
-        console.log(error);
-        return <div>Error loading classrooms: {error}</div>;
-    }
-
-    console.log("asdasd", classrooms);
-
-    // Filter
     const filteredClassrooms = classrooms.filter(classroom =>
         classroom.Classroom.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -60,7 +32,7 @@ export default function Classrooms() {
                 <List sx={{ overflowY: 'auto', height: 500 }}>
                     {filteredClassrooms.map((classroom, index) => (
                         <ListItem
-                            key={`${classroom.Classroom}-${index}`} // Ensure unique key
+                            key={`${classroom.Classroom}-${index}`}
                             disablePadding
                             className="shadow-md"
                         >

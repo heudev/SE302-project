@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Zoom } from "react-awesome-reveal";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useNavigate } from "react-router-dom";
-import { getAllItems } from "../../../database/tables/courses";
+import { useSelector } from "react-redux";
+import { CourseInterface } from "../../../store/courses";
 
 type Course = {
     Course: string;
@@ -15,36 +16,16 @@ type Course = {
 };
 
 export default function Courses() {
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const courses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const courses = await getAllItems();
-                setCourses(courses);
-            } catch (err) {
-                setError('Error loading courses');
-                console.error(err);
-            }
-        };
-        const timer = setTimeout(fetchCourses, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (error) {
-        console.log(error);
-        return <div>Error loading courses: {error}</div>;
-    }
 
     const filteredCourses = courses.filter((course: Course) =>
         course.Course.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.Lecturer.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    //route navigation
     const handleCourseClick = (courseId: string) => {
         navigate(`/coursePage/${courseId}`);
     };

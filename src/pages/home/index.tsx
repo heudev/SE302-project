@@ -1,67 +1,36 @@
-import Courses from "./courses"
-import Classrooms from "./classrooms"
-import Students from "./students"
-import { useCourses } from "../../hooks/useCourses";
-import { useClassrooms } from "../../hooks/useClassrooms";
-import { addItem as addCourse } from "../../database/tables/courses";
-import { addItem as addClassroom } from "../../database/tables/classrooms";
-import { getAllItems as getAllCourses } from "../../database/tables/courses";
-import { getAllItems as getAllClassrooms } from "../../database/tables/classrooms";
-
-
-let dbLock = false;
-
-const acquireLock = async () => {
-    while (dbLock) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    dbLock = true;
-};
-
-const releaseLock = () => {
-    dbLock = false;
-};
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourses } from "../../services/fetchCourses";
+import { fetchClassrooms } from "../../services/fetchClassrooms";
+import { setCourses, CourseInterface } from "../../store/courses";
+import { setClassrooms, ClassroomInterface } from "../../store/classrooms";
+import Courses from './courses';
+import Classrooms from './classrooms';
+import Students from './students';
 
 export default function Home() {
-    const { courses, error: coursesError } = useCourses();
-    const { classrooms, error: classroomsError } = useClassrooms();
+    const dispatch = useDispatch();
 
+    useEffect(() => {
+        fetchCourses().then(courses => {
+            dispatch(setCourses(courses));
+        });
 
-    if (coursesError || classroomsError) {
-        console.log(coursesError || classroomsError);
-        return;
-    }
+    }, [dispatch]);
 
-    const saveData = async () => {
-        await acquireLock();
-        const existingCourses = await getAllCourses();
-        const existingClassrooms = await getAllClassrooms();
+    useEffect(() => {
+        fetchClassrooms().then(classrooms => {
+            dispatch(setClassrooms(classrooms));
+        });
 
-        if (existingCourses.length === 0) {
-            // Save courses to the database
-            courses.forEach(course => {
-                course.Classroom = "unknown";
-                addCourse(course).catch(err => console.error("Failed to save course:", err));
-            });
-            console.log("Courses", courses);
-        }
+    }, [dispatch]);
 
-        if (existingClassrooms.length === 0) {
-            // Save classrooms to the database
-            classrooms.forEach(classroom => {
-                addClassroom(classroom).catch(err => console.error("Failed to save classroom:", err));
-            });
-        }
-        releaseLock();
-    };
+    const courses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
+    const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
 
-    saveData();
+    console.log(courses);
+    console.log(classrooms);
 
-
-
-    if (coursesError || classroomsError) {
-        return <div>Error loading data: {coursesError || classroomsError}</div>;
-    }
 
     return (
         <div className="flex-grow flex justify-center space-x-4">
@@ -69,5 +38,5 @@ export default function Home() {
             <Classrooms />
             <Students />
         </div>
-    )
+    );
 }

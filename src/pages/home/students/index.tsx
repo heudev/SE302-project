@@ -1,50 +1,36 @@
 import { useState, useEffect } from "react";
-import { getAllItems } from "../../../database/tables/courses";
+import { useSelector } from "react-redux";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import { Zoom } from "react-awesome-reveal";
 
 interface Student {
     Name: string;
 }
-
 interface Course {
     Course: string;
     TimeToStart: string;
     DurationInLectureHours: string;
     Lecturer: string;
     Students: string[];
-    Classroom?: string;
+    Classroom: string;
 }
 
 export default function Students() {
     const [students, setStudents] = useState<Student[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [error, setError] = useState<string | null>(null);
+
+    const courses = useSelector((state: { courses: Course[] }) => state.courses);
 
     useEffect(() => {
-        const fetchDistinctStudents = async () => {
-            try {
-                const courses = await getAllItems();
-                const allStudents = courses.flatMap((course: Course) => course.Students);
-                const distinctStudents = Array.from(new Set(allStudents)).map((name) => ({ Name: name }));
-                setStudents(distinctStudents);
-            } catch (err) {
-                console.error("Error fetching students:", err);
-                setError("Failed to load students from the database.");
-            }
-        };
+        const allStudents = courses.flatMap((course: Course) => course.Students);
+        const distinctStudents = Array.from(new Set(allStudents)).map((name) => ({ Name: name }));
+        setStudents(distinctStudents);
+    }, [courses]);
 
-        fetchDistinctStudents();
-    }, [students]);
-
-    if (error) {
-        return <div>Error loading students: {error}</div>;
-    }
 
     const filteredStudents = students.filter(student =>
         student.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
 
     return (
         <Zoom style={{ width: '100%', maxWidth: 380 }} delay={700} triggerOnce={true}>

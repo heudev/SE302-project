@@ -9,7 +9,7 @@ interface CourseInfoProps {
     DurationInLectureHours: string;
     Lecturer: string;
     Students: string[];
-    Classroom?: string;
+    Classroom: string;
 }
 
 export function CourseInfo({ course }: { course: CourseInfoProps }) {
