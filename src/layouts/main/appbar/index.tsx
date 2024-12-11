@@ -5,6 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IeuLogo from "../../../assets/ieu-logo.png";
+import { useNavigate } from 'react-router-dom';
 
 export default function AppBarComponent() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -24,12 +25,27 @@ export default function AppBarComponent() {
     const handleImportClick = () => {
         fileInputRef.current?.click();
     };
+    
+    const navigate = useNavigate();
+
+    const handleLogoClick = () => {
+        navigate('/');
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <img src={IeuLogo} alt="IEU Timetable" width={40} className='me-3' onContextMenu={e => e.preventDefault()} draggable="false" />
+                    <img 
+                        src={IeuLogo} 
+                        alt="IEU Timetable" 
+                        width={40} 
+                        className='me-3' 
+                        onContextMenu={e => e.preventDefault()} 
+                        draggable="false" 
+                        onClick={handleLogoClick} 
+                        style={{ cursor: 'pointer' }} 
+                    />
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         IEU.APP v2
                     </Typography>
