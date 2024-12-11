@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Chip, Tooltip } from "@mui/material";
 import { Zoom } from "react-awesome-reveal";
 
@@ -20,6 +21,7 @@ export default function Students() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const courses = useSelector((state: { courses: Course[] }) => state.courses);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const allStudents = courses.flatMap((course: Course) => course.Students);
@@ -27,13 +29,12 @@ export default function Students() {
         setStudents(distinctStudents);
     }, [courses]);
 
-
     const filteredStudents = students.filter(student =>
         student.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={700} triggerOnce={true}>
+        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={400} triggerOnce={true}>
             <Box sx={{ bgcolor: 'background.paper' }} className='shadow-2xl rounded'>
                 <TextField
                     type="search"
@@ -48,7 +49,7 @@ export default function Students() {
                     {filteredStudents.map((student) => (
                         <Collapse key={student.Name} in={true}>
                             <ListItem disablePadding className="shadow-md">
-                                <ListItemButton>
+                                <ListItemButton onClick={() => navigate(`/student/${student.Name}`)}>
                                     <Tooltip title={`Student`} arrow>
                                         <Chip
                                             className='me-2'

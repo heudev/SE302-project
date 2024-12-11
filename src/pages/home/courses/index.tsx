@@ -31,7 +31,7 @@ export default function Courses() {
     };
 
     return (
-        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={700} triggerOnce={true}>
+        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={100} triggerOnce={true}>
             <Box sx={{ bgcolor: 'background.paper' }} className='shadow-2xl rounded'>
                 <TextField
                     type="search"

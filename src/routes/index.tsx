@@ -1,8 +1,9 @@
 import { createHashRouter } from "react-router-dom";
 import MainLayout from "../layouts/main";
 import Home from "../pages/home";
-import Course from "../pages/course"; 
-import Classroom from "../pages/classroom"; 
+import Course from "../pages/course";
+import Classroom from "../pages/classroom";
+import Student from "../pages/student"; // Import the new Student page
 const routes = createHashRouter([
     {
         path: '/',
@@ -13,12 +14,16 @@ const routes = createHashRouter([
                 element: <Home />
             },
             {
-                path: '/coursePage/:courseId', 
-                element: <Course />  
+                path: '/coursePage/:courseId',
+                element: <Course />
             },
             {
-                path: '/classroom/:classroomId', // This should be the correct route
+                path: '/classroom/:classroomId',
                 element: <Classroom />
+            },
+            {
+                path: '/student/:studentName', // Add the new route for individual student pages
+                element: <Student />
             }
             /* {
                 path: 'explore',
