@@ -6,10 +6,17 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IeuLogo from "../../../assets/ieu-logo.png";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCourseClassroom } from '../../../store/courses';
+import { ClassroomInterface } from '../../../store/classrooms';
+import { CourseInterface } from '../../../store/courses';
 
 export default function AppBarComponent() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const dispatch = useDispatch();
+    const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
+    const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -32,6 +39,26 @@ export default function AppBarComponent() {
         navigate('/');
     };
 
+    const availableClassrooms = classrooms.filter(room => {
+        const hasEnoughCapacity = parseInt(room.Capacity) >= allCourses.reduce((max, course) => Math.max(max, course.Students.length), 0);
+        const hasTimeConflict = allCourses.some(otherCourse => 
+            otherCourse.Classroom === room.Classroom && 
+            otherCourse.TimeToStart === allCourses[0].TimeToStart
+        );
+        return hasEnoughCapacity && !hasTimeConflict;
+    });
+
+    const handleDistributeClassrooms = () => {
+        availableClassrooms.forEach((room, index) => {
+            if (index < allCourses.length) {
+                dispatch(updateCourseClassroom({
+                    courseName: allCourses[index].Course,
+                    classroom: room.Classroom
+                }));
+            }
+        });
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
@@ -49,7 +76,7 @@ export default function AppBarComponent() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         IEU.APP v2
                     </Typography>
-                    <Button color="inherit" onClick={() => { /* courseları distribute etcek */ }}>Distribute</Button>
+                    <Button color="inherit" onClick={handleDistributeClassrooms}>Distribute</Button>
                     <Button color="inherit" onClick={handleImportClick} sx={{ ml: 2 }}>Import</Button>
                     <input
                         type="file"
