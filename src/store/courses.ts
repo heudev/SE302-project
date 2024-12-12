@@ -21,9 +21,18 @@ const coursesSlice = createSlice({
             updateIndexedDb(newState); // Update indexedDb
             return newState;
         },
+        updateCourseClassroom(state, action: PayloadAction<{ courseName: string, classroom: string }>) {
+            const newState = state.map(course => 
+                course.Course === action.payload.courseName 
+                    ? { ...course, Classroom: action.payload.classroom }
+                    : course
+            );
+            updateIndexedDb(newState);
+            return newState;
+        }
     },
 });
 
-export const { setCourses } = coursesSlice.actions;
+export const { setCourses, updateCourseClassroom } = coursesSlice.actions;
 
 export default coursesSlice.reducer;
