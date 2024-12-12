@@ -1,16 +1,18 @@
-import { List, ListItem, ListItemText, TextField, InputAdornment } from "@mui/material";
+import { List, ListItem, ListItemText, TextField, InputAdornment, IconButton } from "@mui/material";
 import { Collapse } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface StudentsListProps {
     students: string[];
 }
 
-export function StudentsList({ students }: StudentsListProps) {
+export function StudentsList({ students: initialStudents }: StudentsListProps) {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
+    const [students, setStudents] = useState(initialStudents);
     
     const filteredStudents = students.filter(student => 
         student.toLowerCase().includes(searchTerm.toLowerCase())
@@ -18,6 +20,12 @@ export function StudentsList({ students }: StudentsListProps) {
 
     const handleStudentClick = (studentName: string) => {
         navigate(`/student/${studentName}`);
+    };
+
+    const handleRemoveStudent = (studentName: string) => {
+        if (window.confirm(`Are you sure you want to remove ${studentName}?`)) {
+            setStudents(students.filter(student => student !== studentName));
+        }
     };
 
     return (
@@ -43,7 +51,6 @@ export function StudentsList({ students }: StudentsListProps) {
                     <Collapse key={index} in={true}>
                         <ListItem 
                             disablePadding 
-                            onClick={() => handleStudentClick(student)}
                             sx={{ 
                                 cursor: 'pointer',
                                 '&:hover': {
@@ -53,7 +60,10 @@ export function StudentsList({ students }: StudentsListProps) {
                                 transition: 'background-color 0.2s'
                             }}
                         >
-                            <ListItemText primary={student} />
+                            <ListItemText primary={student} onClick={() => handleStudentClick(student)} />
+                            <IconButton edge="end" onClick={() => handleRemoveStudent(student)}>
+                                <CloseIcon />
+                            </IconButton>
                         </ListItem>
                     </Collapse>
                 ))}

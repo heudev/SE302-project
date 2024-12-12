@@ -49,7 +49,8 @@ export default function AppBarComponent() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         IEU.APP v2
                     </Typography>
-                    <Button color="inherit" onClick={handleImportClick}>Import</Button>
+                    <Button color="inherit" onClick={() => { /* courseları distribute etcek */ }}>Distribute</Button>
+                    <Button color="inherit" onClick={handleImportClick} sx={{ ml: 2 }}>Import</Button>
                     <input
                         type="file"
                         ref={fileInputRef}
