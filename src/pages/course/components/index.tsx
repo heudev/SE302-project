@@ -60,7 +60,12 @@ export default function CoursePage() {
                     </Tabs>
 
 
-                    {activeTab === 0 && <StudentsList students={course?.Students || []} />}
+                    {activeTab === 0 && course && (
+                        <StudentsList 
+                            students={course.Students} 
+                            courseId={course.Course}
+                        />
+                    )}
                     {activeTab === 1 && <WeeklyTable />}
                 </CardContent>
             </Card>
