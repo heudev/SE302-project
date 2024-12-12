@@ -29,9 +29,10 @@ export default function Students() {
         setStudents(distinctStudents);
     }, [courses]);
 
-    const filteredStudents = students.filter(student =>
-        student.Name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredStudents = students.filter(student => {
+        const searchTerms = searchTerm.toLowerCase().split(' ').filter(term => term.length > 0);
+        return searchTerms.every(term => student.Name.toLowerCase().includes(term));
+    });
 
     return (
         <Zoom style={{ width: '100%', maxWidth: 380 }} delay={400} triggerOnce={true}>
