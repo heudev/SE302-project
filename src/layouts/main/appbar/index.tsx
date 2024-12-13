@@ -39,21 +39,28 @@ export default function AppBarComponent() {
         navigate('/');
     };
 
-    const availableClassrooms = classrooms.filter(room => {
-        const hasEnoughCapacity = parseInt(room.Capacity) >= allCourses.reduce((max, course) => Math.max(max, course.Students.length), 0);
-        const hasTimeConflict = allCourses.some(otherCourse => 
-            otherCourse.Classroom === room.Classroom && 
-            otherCourse.TimeToStart === allCourses[0].TimeToStart
-        );
-        return hasEnoughCapacity && !hasTimeConflict;
-    });
+    //(availableClasroomları çekemedim course page den tekrardan yapıyor düzeltilmesi gerekiyor)
+    const getAvailableClassrooms = (course: CourseInterface) => {
+        return classrooms.filter(room => {
+            const hasEnoughCapacity = parseInt(room.Capacity) >= course.Students.length;
+
+            const hasTimeConflict = allCourses.some(otherCourse => 
+                otherCourse.Course !== course.Course && // Don't check against self
+                otherCourse.Classroom === room.Classroom && // Same classroom
+                otherCourse.TimeToStart === course.TimeToStart // Same time
+            );
+
+            return hasEnoughCapacity && !hasTimeConflict;
+        });
+    };
 
     const handleDistributeClassrooms = () => {
-        availableClassrooms.forEach((room, index) => {
-            if (index < allCourses.length) {
+        allCourses.forEach((course) => {  //(course, index) => {  //course, index
+            const availableClassrooms = getAvailableClassrooms(course);
+            if (availableClassrooms.length > 0) {
                 dispatch(updateCourseClassroom({
-                    courseName: allCourses[index].Course,
-                    classroom: room.Classroom
+                    courseName: course.Course,
+                    classroom: availableClassrooms[0].Classroom // Assign the first available classroom
                 }));
             }
         });
