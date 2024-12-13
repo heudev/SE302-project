@@ -39,28 +39,49 @@ export default function AppBarComponent() {
         navigate('/');
     };
 
-    //(availableClasroomları çekemedim course page den tekrardan yapıyor düzeltilmesi gerekiyor)
+    //(availableClasroomları çekemedim course page den tekrardan yapıyor düzeltilebilir )
+    //sıralamayı doğru yapıyor ama available da karışık gözüküyor
+    //mutlak fark eşitse ilkini alıyor hep
+    //öğrenci eklenince ya da çıkarılınca olan çakışmalara bakılması lazım 
+    //handle yapınca olana da bakılcak 
     const getAvailableClassrooms = (course: CourseInterface) => {
-        return classrooms.filter(room => {
-            const hasEnoughCapacity = parseInt(room.Capacity) >= course.Students.length;
+        return classrooms
+            .filter(room => {
+                const hasEnoughCapacity = parseInt(room.Capacity) >= course.Students.length;
 
-            const hasTimeConflict = allCourses.some(otherCourse => 
-                otherCourse.Course !== course.Course && // Don't check against self
-                otherCourse.Classroom === room.Classroom && // Same classroom
-                otherCourse.TimeToStart === course.TimeToStart // Same time
-            );
+                const hasTimeConflict = allCourses.some(otherCourse => 
+                    otherCourse.Course !== course.Course && // Don't check against self
+                    otherCourse.Classroom === room.Classroom && // Same classroom
+                    otherCourse.TimeToStart === course.TimeToStart // Same time
+                );
 
-            return hasEnoughCapacity && !hasTimeConflict;
-        });
+                return hasEnoughCapacity && !hasTimeConflict;
+            })
+            .sort((a, b) => {
+                
+                const capacityA = parseInt(a.Capacity);
+                const capacityB = parseInt(b.Capacity);
+                const enrollment = course.Students.length;
+                const diffA = Math.abs(capacityA - enrollment);
+                const diffB = Math.abs(capacityB - enrollment);
+            
+                // Öncelik mutlak farkta
+                if (diffA !== diffB) {
+                    return diffA - diffB;
+                }
+            
+                // Eğer mutlak fark eşitse, kapasiteye göre artan sırala
+                return capacityA - capacityB;
+            })
     };
 
     const handleDistributeClassrooms = () => {
-        allCourses.forEach((course) => {  //(course, index) => {  //course, index
+        allCourses.forEach((course) => {
             const availableClassrooms = getAvailableClassrooms(course);
             if (availableClassrooms.length > 0) {
                 dispatch(updateCourseClassroom({
                     courseName: course.Course,
-                    classroom: availableClassrooms[0].Classroom // Assign the first available classroom
+                    classroom: availableClassrooms[0].Classroom // Assign the most suitable classroom
                 }));
             }
         });
