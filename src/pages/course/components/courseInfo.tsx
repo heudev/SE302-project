@@ -1,4 +1,4 @@
-import { Chip, Collapse, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { Chip, Collapse, List, ListItem, ListItemButton, ListItemText, Box } from "@mui/material";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ClassroomIcon from '@mui/icons-material/Class';
 import GroupIcon from '@mui/icons-material/Group';
@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { ClassroomInterface } from "../../../store/classrooms";
 import { CourseInterface, updateCourseClassroom } from "../../../store/courses";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 interface CourseInfoProps {
     Course: string;
@@ -47,6 +49,7 @@ export function CourseInfo({ course }: { course: CourseInfoProps }) {
     const dispatch = useDispatch();
     const [isHovered, setIsHovered] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
     
     const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
     const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
@@ -100,30 +103,79 @@ export function CourseInfo({ course }: { course: CourseInfoProps }) {
             {/* Classroom */}
             <div className="w-full">
                 <div className="relative">
-                    <Chip
-                        icon={isHovered ? <EditIcon /> : <ClassroomIcon />}
-                        label={isHovered ? '' : `Classroom: ${course.Classroom}`}
-                        color={isHovered ? "primary" : "default"}
-                        className="w-full transition-colors duration-200"
-                        variant={isHovered ? "filled" : "outlined"}
+                    <Box
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
-                        onClick={() => setIsOpen(!isOpen)}
                         sx={{
-                            '& .MuiChip-icon': {
-                                color: isHovered ? 'white' : 'inherit',
-                                margin: isHovered ? '0' : '0 8px 0 12px',
-                                position: isHovered ? 'absolute' : 'static',
-                                left: '50%',
-                                transform: isHovered ? 'translateX(-50%)' : 'none',
-                            },
                             position: 'relative',
-                            justifyContent: isHovered ? 'center' : 'flex-start',
-                            '& .MuiChip-label': {
-                                paddingLeft: isHovered ? 0 : '0',
-                            }
+                            height: '32px', // Standard Chip height
+                            width: '100%'
                         }}
-                    />
+                    >
+                        <Chip
+                            icon={<ClassroomIcon />}
+                            label={`Classroom: ${course.Classroom}`}
+                            color="default"
+                            className="w-full"
+                            variant="outlined"
+                            sx={{
+                                display: isHovered ? 'none' : 'flex',
+                                position: 'absolute',
+                                width: '100%'
+                            }}
+                        />
+                        {isHovered && (
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    border: '1px solid rgba(0, 0, 0, 0.23)',
+                                    borderRadius: '16px',
+                                    overflow: 'hidden',
+                                    bgcolor: 'rgba(0, 0, 0, 0.8)'  // Changed back to dark background
+                                }}
+                            >
+                                <Box
+                                    onClick={course.Classroom !== "unknown" ? () => navigate(`/classroom/${course.Classroom}`) : undefined}
+                                    sx={{
+                                        flex: 1,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: course.Classroom !== "unknown" ? 'pointer' : 'not-allowed',
+                                        '&:hover': course.Classroom !== "unknown" ? { 
+                                            bgcolor: 'rgba(255, 255, 255, 0.1)' 
+                                        } : {},
+                                        color: course.Classroom !== "unknown" ? 'white' : 'rgba(255, 255, 255, 0.3)',
+                                    }}
+                                >
+                                    <VisibilityIcon fontSize="small" />
+                                </Box>
+                                <Box
+                                    sx={{
+                                        width: '1px',
+                                        bgcolor: 'rgba(255, 255, 255, 0.2)'
+                                    }}
+                                />
+                                <Box
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    sx={{
+                                        flex: 1,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' },
+                                        color: 'white'
+                                    }}
+                                >
+                                    <EditIcon fontSize="small" />
+                                </Box>
+                            </Box>
+                        )}
+                    </Box>
                     <Collapse in={isOpen}>
                         <List sx={{
                             maxHeight: 200,
