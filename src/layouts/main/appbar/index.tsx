@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateCourseClassroom } from '../../../store/courses';
 import { ClassroomInterface } from '../../../store/classrooms';
 import { CourseInterface } from '../../../store/courses';
+import Snackbar from '@mui/material/Snackbar';
 
 export default function AppBarComponent() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -17,6 +18,10 @@ export default function AppBarComponent() {
     const dispatch = useDispatch();
     const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
     const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+    });
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -39,52 +44,76 @@ export default function AppBarComponent() {
         navigate('/');
     };
 
-    //(availableClasroomları çekemedim course page den tekrardan yapıyor düzeltilebilir )
-    //sıralamayı doğru yapıyor ama available da karışık gözüküyor
-    //mutlak fark eşitse ilkini alıyor hep
-    //öğrenci eklenince ya da çıkarılınca olan çakışmalara bakılması lazım 
-    //handle yapınca olana da bakılcak 
-    const getAvailableClassrooms = (course: CourseInterface) => {
-        return classrooms
-            .filter(room => {
-                const hasEnoughCapacity = parseInt(room.Capacity) >= course.Students.length;
+    const parseTimeToMinutes = (time: string): number => {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
+    };
 
-                const hasTimeConflict = allCourses.some(otherCourse => 
-                    otherCourse.Course !== course.Course && // Don't check against self
-                    otherCourse.Classroom === room.Classroom && // Same classroom
-                    otherCourse.TimeToStart === course.TimeToStart // Same time
-                );
+    const getDay = (timeToStart: string): string => {
+        return timeToStart.split(' ')[0];
+    };
 
-                return hasEnoughCapacity && !hasTimeConflict;
-            })
-            .sort((a, b) => {
-                
-                const capacityA = parseInt(a.Capacity);
-                const capacityB = parseInt(b.Capacity);
-                const enrollment = course.Students.length;
-                const diffA = Math.abs(capacityA - enrollment);
-                const diffB = Math.abs(capacityB - enrollment);
+    const hasTimeConflict = (schedules: CourseInterface[], newCourse: CourseInterface): boolean => {
+        const newStart = parseTimeToMinutes(newCourse.TimeToStart.split(' ')[1]);
+        const newEnd = newStart + parseInt(newCourse.DurationInLectureHours) * 60;
+        const newDay = getDay(newCourse.TimeToStart);
+
+        return schedules.some(schedule => {
+            const scheduleDay = getDay(schedule.TimeToStart);
             
-                // Öncelik mutlak farkta
-                if (diffA !== diffB) {
-                    return diffA - diffB;
-                }
-            
-                // Eğer mutlak fark eşitse, kapasiteye göre artan sırala
-                return capacityA - capacityB;
-            })
+            // If days are different, there's no conflict
+            if (newDay !== scheduleDay) return false;
+
+            const scheduleStart = parseTimeToMinutes(schedule.TimeToStart.split(' ')[1]);
+            const scheduleEnd = scheduleStart + parseInt(schedule.DurationInLectureHours) * 60;
+            return (newStart < scheduleEnd && newEnd > scheduleStart);
+        });
     };
 
     const handleDistributeClassrooms = () => {
-        allCourses.forEach((course) => {
-            const availableClassrooms = getAvailableClassrooms(course);
-            if (availableClassrooms.length > 0) {
-                dispatch(updateCourseClassroom({
-                    courseName: course.Course,
-                    classroom: availableClassrooms[0].Classroom // Assign the most suitable classroom
-                }));
-            }
-        });
+        try {
+            const classroomSchedules: Record<string, CourseInterface[]> = {};
+
+            const sortedCourses = [...allCourses].sort((a, b) => 
+                b.Students.length - a.Students.length 
+            );
+
+            sortedCourses.forEach(course => {
+                const suitableClassroom = classrooms
+                    .filter(classroom => {
+                        const hasCapacity = parseInt(classroom.Capacity) >= course.Students.length;
+                        const scheduledCourses = classroomSchedules[classroom.Classroom] || [];
+                        const hasNoConflict = !hasTimeConflict(scheduledCourses, course);
+                        return hasCapacity && hasNoConflict;
+                    })
+                    .sort((a, b) => parseInt(a.Capacity) - parseInt(b.Capacity))[0];
+
+                if (suitableClassroom) {
+                    if (!classroomSchedules[suitableClassroom.Classroom]) {
+                        classroomSchedules[suitableClassroom.Classroom] = [];
+                    }
+                    classroomSchedules[suitableClassroom.Classroom].push(course);
+
+                    dispatch(updateCourseClassroom({
+                        courseName: course.Course,
+                        classroom: suitableClassroom.Classroom
+                    }));
+                } else {
+                    console.warn(`No suitable classroom found for course: ${course.Course}`);
+                }
+            });
+
+            setSnackbar({
+                open: true,
+                message: "Classrooms successfully assigned to courses"
+            });
+        } catch (error) {
+            console.error("An error occurred while arranging classrooms:", error);
+            setSnackbar({
+                open: true,
+                message: "An error occurred while arranging classrooms"
+            });
+        }
     };
 
     return (
@@ -120,6 +149,13 @@ export default function AppBarComponent() {
                     <img src={selectedImage} alt="Imported" style={{ maxWidth: '100%', maxHeight: '300px' }} />
                 </Box>
             )}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={1000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                message={snackbar.message}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            />
         </Box>
     );
 }

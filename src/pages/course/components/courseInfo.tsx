@@ -17,6 +17,32 @@ interface CourseInfoProps {
     Classroom: string;
 }
 
+const parseTimeToMinutes = (time: string): number => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+};
+
+const getDay = (timeToStart: string): string => {
+    return timeToStart.split(' ')[0];
+};
+
+const hasTimeConflict = (schedules: CourseInterface[], newCourse: CourseInterface): boolean => {
+    const newStart = parseTimeToMinutes(newCourse.TimeToStart.split(' ')[1]);
+    const newEnd = newStart + parseInt(newCourse.DurationInLectureHours) * 60;
+    const newDay = getDay(newCourse.TimeToStart);
+
+    return schedules.some(schedule => {
+        const scheduleDay = getDay(schedule.TimeToStart);
+        
+        // If days are different, there's no conflict
+        if (newDay !== scheduleDay) return false;
+
+        const scheduleStart = parseTimeToMinutes(schedule.TimeToStart.split(' ')[1]);
+        const scheduleEnd = scheduleStart + parseInt(schedule.DurationInLectureHours) * 60;
+        return (newStart < scheduleEnd && newEnd > scheduleStart);
+    });
+};
+
 export function CourseInfo({ course }: { course: CourseInfoProps }) {
     const dispatch = useDispatch();
     const [isHovered, setIsHovered] = useState(false);
@@ -26,16 +52,18 @@ export function CourseInfo({ course }: { course: CourseInfoProps }) {
     const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
 
     const availableClassrooms = classrooms.filter(room => {
-        
         const hasEnoughCapacity = parseInt(room.Capacity) >= course.Students.length;
         
-        const hasTimeConflict = allCourses.some(otherCourse => 
-            otherCourse.Course !== course.Course && // Don't check against self
-            otherCourse.Classroom === room.Classroom && // Same classroom
-            otherCourse.TimeToStart === course.TimeToStart // Same time
-        );
+        const coursesInRoom = allCourses.filter(c => c.Classroom === room.Classroom && c.Course !== course.Course);
+        const hasTimeConflictInRoom = hasTimeConflict(coursesInRoom, {
+            Course: course.Course,
+            TimeToStart: course.TimeToStart,
+            DurationInLectureHours: course.DurationInLectureHours,
+            Classroom: room.Classroom,
+            Students: course.Students
+        } as CourseInterface);
 
-        return hasEnoughCapacity && !hasTimeConflict;
+        return hasEnoughCapacity && !hasTimeConflictInRoom;
     });
 
     const handleClassroomSelect = (selectedRoom: string) => {
