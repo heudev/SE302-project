@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,10 +11,9 @@ import { updateCourseClassroom } from '../../../store/courses';
 import { ClassroomInterface } from '../../../store/classrooms';
 import { CourseInterface } from '../../../store/courses';
 import Snackbar from '@mui/material/Snackbar';
+import ImportFiles from "./components/ImportFiles";
 
 export default function AppBarComponent() {
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const dispatch = useDispatch();
     const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
     const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
@@ -23,21 +22,6 @@ export default function AppBarComponent() {
         message: '',
     });
 
-    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setSelectedImage(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleImportClick = () => {
-        fileInputRef.current?.click();
-    };
-    
     const navigate = useNavigate();
 
     const handleLogoClick = () => {
@@ -60,7 +44,7 @@ export default function AppBarComponent() {
 
         return schedules.some(schedule => {
             const scheduleDay = getDay(schedule.TimeToStart);
-            
+
             // If days are different, there's no conflict
             if (newDay !== scheduleDay) return false;
 
@@ -74,8 +58,8 @@ export default function AppBarComponent() {
         try {
             const classroomSchedules: Record<string, CourseInterface[]> = {};
 
-            const sortedCourses = [...allCourses].sort((a, b) => 
-                b.Students.length - a.Students.length 
+            const sortedCourses = [...allCourses].sort((a, b) =>
+                b.Students.length - a.Students.length
             );
 
             sortedCourses.forEach(course => {
@@ -120,35 +104,23 @@ export default function AppBarComponent() {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <img 
-                        src={IeuLogo} 
-                        alt="IEU Timetable" 
-                        width={40} 
-                        className='me-3' 
-                        onContextMenu={e => e.preventDefault()} 
-                        draggable="false" 
-                        onClick={handleLogoClick} 
-                        style={{ cursor: 'pointer' }} 
+                    <img
+                        src={IeuLogo}
+                        alt="IEU Timetable"
+                        width={40}
+                        className='me-3'
+                        onContextMenu={e => e.preventDefault()}
+                        draggable="false"
+                        onClick={handleLogoClick}
+                        style={{ cursor: 'pointer' }}
                     />
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         IEU.APP v2
                     </Typography>
                     <Button color="inherit" onClick={handleDistributeClassrooms}>Distribute</Button>
-                    <Button color="inherit" onClick={handleImportClick} sx={{ ml: 2 }}>Import</Button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileSelect}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                    />
+                    <ImportFiles />
                 </Toolbar>
             </AppBar>
-            {selectedImage && (
-                <Box sx={{ mt: 2, textAlign: 'center' }}>
-                    <img src={selectedImage} alt="Imported" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                </Box>
-            )}
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={1000}

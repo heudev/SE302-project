@@ -61,7 +61,7 @@ const readFromDatabase = async (dbName: string): Promise<Course[]> => {
     });
 };
 
-const parseCsvData = (data: string): Course[] => {
+export const parseCsvData = (data: string): Course[] => {
     let courses: Course[] = [];
     Papa.parse<Course>(data, {
         header: true,
