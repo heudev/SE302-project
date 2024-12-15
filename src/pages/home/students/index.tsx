@@ -35,7 +35,7 @@ export default function Students() {
     });
 
     return (
-        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={400} triggerOnce={true}>
+        <Zoom style={{ width: '100%', maxWidth: 380 }} delay={250} triggerOnce={true}>
             <Box sx={{ bgcolor: 'background.paper' }} className='shadow-2xl rounded'>
                 <TextField
                     type="search"

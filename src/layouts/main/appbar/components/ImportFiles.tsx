@@ -62,8 +62,10 @@ export default function FileImport() {
         <div>
             <Tooltip title="Please select either 'ClassroomCapacity.csv' for classroom data or 'Courses.csv' for course data. The relevant database will be updated.">
                 <Button
-                    color="inherit"
+                    color="warning"
+                    variant="contained"
                     onClick={() => fileInputRef.current?.click()}
+                    className='w-32'
                 >
                     Import
                 </Button>
@@ -81,7 +83,7 @@ export default function FileImport() {
                 open={snackbarOpen}
                 autoHideDuration={3000}
                 onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 TransitionComponent={SlideTransition}
                 sx={{ mt: 7 }}
             >

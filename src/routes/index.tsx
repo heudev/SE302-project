@@ -3,7 +3,8 @@ import MainLayout from "../layouts/main";
 import Home from "../pages/home";
 import Course from "../pages/course";
 import Classroom from "../pages/classroom";
-import Student from "../pages/student"; // Import the new Student page
+import Student from "../pages/student";
+import NewCourse from "../pages/newcourse";
 const routes = createHashRouter([
     {
         path: '/',
@@ -22,8 +23,12 @@ const routes = createHashRouter([
                 element: <Classroom />
             },
             {
-                path: '/student/:studentName', 
+                path: '/student/:studentName',
                 element: <Student />
+            },
+            {
+                path: '/newcourse',
+                element: <NewCourse />
             }
             /* {
                 path: 'explore',

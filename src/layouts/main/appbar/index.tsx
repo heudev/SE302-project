@@ -1,103 +1,36 @@
-import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IeuLogo from "../../../assets/ieu-logo.png";
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateCourseClassroom } from '../../../store/courses';
-import { ClassroomInterface } from '../../../store/classrooms';
-import { CourseInterface } from '../../../store/courses';
-import Snackbar from '@mui/material/Snackbar';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import ImportFiles from "./components/ImportFiles";
+import DistributeClassroomsButton from './components/DistributeClassroomsButton';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useState } from 'react';
+
 
 export default function AppBarComponent() {
-    const dispatch = useDispatch();
-    const classrooms = useSelector((state: { classrooms: ClassroomInterface[] }) => state.classrooms);
-    const allCourses = useSelector((state: { courses: CourseInterface[] }) => state.courses);
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        message: '',
-    });
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleLogoClick = () => {
         navigate('/');
     };
 
-    const parseTimeToMinutes = (time: string): number => {
-        const [hours, minutes] = time.split(":").map(Number);
-        return hours * 60 + minutes;
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const getDay = (timeToStart: string): string => {
-        return timeToStart.split(' ')[0];
-    };
-
-    const hasTimeConflict = (schedules: CourseInterface[], newCourse: CourseInterface): boolean => {
-        const newStart = parseTimeToMinutes(newCourse.TimeToStart.split(' ')[1]);
-        const newEnd = newStart + parseInt(newCourse.DurationInLectureHours) * 60;
-        const newDay = getDay(newCourse.TimeToStart);
-
-        return schedules.some(schedule => {
-            const scheduleDay = getDay(schedule.TimeToStart);
-
-            // If days are different, there's no conflict
-            if (newDay !== scheduleDay) return false;
-
-            const scheduleStart = parseTimeToMinutes(schedule.TimeToStart.split(' ')[1]);
-            const scheduleEnd = scheduleStart + parseInt(schedule.DurationInLectureHours) * 60;
-            return (newStart < scheduleEnd && newEnd > scheduleStart);
-        });
-    };
-
-    const handleDistributeClassrooms = () => {
-        try {
-            const classroomSchedules: Record<string, CourseInterface[]> = {};
-
-            const sortedCourses = [...allCourses].sort((a, b) =>
-                b.Students.length - a.Students.length
-            );
-
-            sortedCourses.forEach(course => {
-                const suitableClassroom = classrooms
-                    .filter(classroom => {
-                        const hasCapacity = parseInt(classroom.Capacity) >= course.Students.length;
-                        const scheduledCourses = classroomSchedules[classroom.Classroom] || [];
-                        const hasNoConflict = !hasTimeConflict(scheduledCourses, course);
-                        return hasCapacity && hasNoConflict;
-                    })
-                    .sort((a, b) => parseInt(a.Capacity) - parseInt(b.Capacity))[0];
-
-                if (suitableClassroom) {
-                    if (!classroomSchedules[suitableClassroom.Classroom]) {
-                        classroomSchedules[suitableClassroom.Classroom] = [];
-                    }
-                    classroomSchedules[suitableClassroom.Classroom].push(course);
-
-                    dispatch(updateCourseClassroom({
-                        courseName: course.Course,
-                        classroom: suitableClassroom.Classroom
-                    }));
-                } else {
-                    console.warn(`No suitable classroom found for course: ${course.Course}`);
-                }
-            });
-
-            setSnackbar({
-                open: true,
-                message: "Classrooms successfully assigned to courses"
-            });
-        } catch (error) {
-            console.error("An error occurred while arranging classrooms:", error);
-            setSnackbar({
-                open: true,
-                message: "An error occurred while arranging classrooms"
-            });
-        }
+    const handleMenuClose = () => {
+        setAnchorEl(null);
     };
 
     return (
@@ -117,17 +50,45 @@ export default function AppBarComponent() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         IEU.APP v2
                     </Typography>
-                    <Button color="inherit" onClick={handleDistributeClassrooms}>Distribute</Button>
-                    <ImportFiles />
+                    <div className='space-x-1'>
+                        <Button
+                            color={location.pathname === '/' ? "secondary" : "primary"}
+                            variant='contained'
+                            onClick={() => navigate('/')}
+                        >
+                            Home
+                        </Button>
+                        <Button
+                            color={location.pathname === '/newcourse' ? "secondary" : "primary"}
+                            variant='contained'
+                            onClick={() => navigate('/newcourse')}
+                        >
+                            New Course
+                        </Button>
+                        <IconButton
+                            edge="end"
+                            color="inherit"
+                            aria-label="settings"
+                            onClick={handleMenuClick}
+                        >
+                            <SettingsIcon />
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                        >
+                            <MenuItem disableRipple style={{ justifyContent: 'center' }}>
+                                <DistributeClassroomsButton />
+                            </MenuItem>
+                            <MenuItem disableRipple style={{ justifyContent: 'center' }}>
+                                <ImportFiles />
+                            </MenuItem>
+                        </Menu>
+                    </div>
+
                 </Toolbar>
             </AppBar>
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={1000}
-                onClose={() => setSnackbar({ ...snackbar, open: false })}
-                message={snackbar.message}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            />
         </Box>
     );
 }
