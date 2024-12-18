@@ -8,6 +8,7 @@ import { ClassroomInterface } from "../../../store/classrooms";
 import { CourseInterface } from "../../../store/courses";
 import { CourseList } from "./courseList";  // Import the CourseList component
 import { ClassroomInfo } from "./classroomInfo";  // Add this import
+import { WeeklyTable } from "../../../components/weeklyTable";
 
 export default function ClassroomPage() {
     const { classroomId } = useParams();  // Get the classroomId from the URL
@@ -67,12 +68,7 @@ export default function ClassroomPage() {
                             <CourseList classroom={classroom?.Classroom || ''} courses={classroomCourses.map(course => course.Course)} />
                         </Box>
                     )}
-                    {activeTab === 1 && (
-                        <Box sx={{ padding: 2 }}>
-                            <Typography variant="h6">Weekly Table content will be here</Typography>
-                            {/* Render the weekly table content here */}
-                        </Box>
-                    )}
+                    {activeTab === 1 && <WeeklyTable selectedCourses={classroomCourses} />}
                 </CardContent>
             </Card>
         </Box>

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { CourseInfo } from "./courseInfo";
 import { StudentsList } from "./studentsList";
-import { WeeklyTable } from "./weeklyTable";
+import { WeeklyTable } from "../../../components/weeklyTable";
 import { CourseInterface } from "../../../store/courses";
 
 export default function CoursePage() {
@@ -66,7 +66,7 @@ export default function CoursePage() {
                             courseId={course.Course}
                         />
                     )}
-                    {activeTab === 1 && <WeeklyTable />}
+                    {activeTab === 1 && course && <WeeklyTable selectedCourses={[course!]}  />}
                 </CardContent>
             </Card>
         </Box>
