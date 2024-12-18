@@ -59,8 +59,22 @@ export function WeeklyTable({ selectedCourses }: WeeklyTableProps) {
     const courseTimeTable = mapCoursesToTimetable(selectedCourses);
 
     return (
-        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
-            <Table sx={{ minWidth: 650 }}>
+        <TableContainer 
+        component={Paper}
+        sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            overflowX: 'auto',
+            maxWidth: '100vw',
+            '& .MuiTable-root': {
+                minWidth: {
+                    xs: '800px',
+                    md: '650px'
+                }
+            }
+        }}
+        >
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell 
@@ -69,8 +83,7 @@ export function WeeklyTable({ selectedCourses }: WeeklyTableProps) {
                                 backgroundColor: '#f5f5f5',
                                 textAlign: 'center',
                                 fontSize: '1.1rem',
-                                padding: '8px',
-                                height: '60px'
+                                padding: '8px'
                             }}
                         >
                             Time
@@ -82,9 +95,8 @@ export function WeeklyTable({ selectedCourses }: WeeklyTableProps) {
                                     fontWeight: 'bold',
                                     backgroundColor: '#f5f5f5',
                                     textAlign: 'center',
-                                    fontSize: '1.1rem',
+                                    fontSize: '1rem',
                                     padding: '8px',
-                                    height: '60px'
                                 }}
                             >
                                 {day}
@@ -101,9 +113,10 @@ export function WeeklyTable({ selectedCourses }: WeeklyTableProps) {
                                 '&:hover': {
                                     backgroundColor: '#e3f2fd',
                                 },
+                                height: '70px'
                             }}
                         >
-                            <TableCell sx={{ fontSize: '1rem', fontWeight: 'bold', textAlign: 'center', height: '60'}}>
+                            <TableCell sx={{ fontSize: '1rem', fontWeight: 'bold', textAlign: 'center'}}>
                                 {slot.start}
                             </TableCell>
                             {courseTimeTable.map((day, colIndex) => (
