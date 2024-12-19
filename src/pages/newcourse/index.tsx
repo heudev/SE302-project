@@ -24,8 +24,8 @@ export default function NewCourse() {
     });
 
     const hours = [
-        "8:30",
-        "9:25",
+        "08:30",
+        "09:25",
         "10:20",
         "11:15",
         "12:10",
@@ -37,10 +37,6 @@ export default function NewCourse() {
         "17:40",
         "18:35",
         "19:30",
-        "20:25",
-        "21:20",
-        "22:15",
-        "23:10"
     ];
     const days = {
         "Monday": hours,
@@ -54,6 +50,7 @@ export default function NewCourse() {
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,11 +77,12 @@ export default function NewCourse() {
 
     const handleSaveCourse = () => {
         dispatch(setCourses([...courses, course]));
-        
+        // Add course to the classroom's course list and students' course list
+        // ...additional logic...
         setOpenSnackbar(true);
         setTimeout(() => {
             navigate('/');
-        }, 250); 
+        }, 2000); // Redirect after 2 seconds
     };
 
     const handleCloseSnackbar = () => {
@@ -92,24 +90,32 @@ export default function NewCourse() {
     };
 
     const getAvailableTimes = () => {
-        const studentAvailability: { [key: string]: number } = {};
-        courses.forEach(course => {
-            course.Students.forEach(student => {
-                if (!studentAvailability[student]) {
-                    studentAvailability[student] = 0;
-                }
-                studentAvailability[student]++;
-            });
-        });
-
         const availableTimes: string[] = [];
+
         Object.entries(days).forEach(([day, times]) => {
             times.forEach(time => {
                 const timeSlot = `${day} ${time}`;
-                const isAvailable = selectedStudents.every(student => {
-                    return !courses.some(course => course.Students.includes(student) && course.TimeToStart === timeSlot);
+
+                // Check if any selected student has a course at this time
+                const isTimeAvailable = selectedStudents.every(student => {
+                    return !courses.some(existingCourse => {
+                        if (existingCourse.Students.includes(student)) {
+                            // Get the time range of the existing course
+                            const [courseDay, courseStartTime] = existingCourse.TimeToStart.split(' ');
+                            const courseStartIndex = hours.indexOf(courseStartTime);
+                            const courseEndIndex = courseStartIndex + parseInt(existingCourse.DurationInLectureHours);
+
+                            // Check if the current time slot falls within the course duration
+                            if (courseDay === day) {
+                                const currentTimeIndex = hours.indexOf(time)
+                                return currentTimeIndex >= courseStartIndex && currentTimeIndex < courseEndIndex;
+                            }
+                        }
+                        return false;
+                    });
                 });
-                if (isAvailable) {
+
+                if (isTimeAvailable) {
                     availableTimes.push(timeSlot);
                 }
             });
@@ -169,8 +175,18 @@ export default function NewCourse() {
         return Array.from({ length: Math.min(maxDuration, 5) }, (_, i) => (i + 1).toString());
     };
 
+    const getFilteredStudents = () => {
+        const allStudents = Array.from(new Set(courses.flatMap(course => course.Students)));
+        return allStudents.filter(student =>
+            student.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    };
+
     const renderStudent = ({ index, style }: { index: number, style: React.CSSProperties }) => {
-        const student = Array.from(new Set(courses.flatMap(course => course.Students)))[index];
+        const filteredStudents = getFilteredStudents();
+        const student = filteredStudents[index];
+        if (!student) return null;
+
         const isSelected = selectedStudents.indexOf(student) > -1;
 
         const handleClick = () => {
@@ -187,7 +203,6 @@ export default function NewCourse() {
             </MenuItem>
         );
     };
-
     return (
         <Box sx={{ padding: 3, maxWidth: 800, margin: '0 auto' }}>
             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
@@ -200,7 +215,7 @@ export default function NewCourse() {
                             <HomeIcon />
                         </IconButton>
                     </Stack>
-                    
+
                     <Typography variant="h4" gutterBottom color='primary'>New Course</Typography>
                     <TextField
                         label="Course Code"
@@ -227,11 +242,21 @@ export default function NewCourse() {
                             input={<OutlinedInput label="Students" />}
                             renderValue={(selected) => selected.join(', ')}
                         >
+                            <Box sx={{ p: 1 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    placeholder="Search students..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                            </Box>
                             <VirtualizedList
                                 height={400}
                                 width="100%"
                                 itemSize={46}
-                                itemCount={Array.from(new Set(courses.flatMap(course => course.Students))).length}
+                                itemCount={getFilteredStudents().length}
                             >
                                 {renderStudent}
                             </VirtualizedList>
