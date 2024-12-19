@@ -51,13 +51,7 @@ export default function AppBarComponent() {
                         IEU.APP v2
                     </Typography>
                     <div className='space-x-1'>
-                        <Button
-                            color={location.pathname === '/' ? "secondary" : "primary"}
-                            variant='contained'
-                            onClick={() => navigate('/')}
-                        >
-                            Home
-                        </Button>
+                        
                         <Button
                             color={location.pathname === '/newcourse' ? "secondary" : "primary"}
                             variant='contained'

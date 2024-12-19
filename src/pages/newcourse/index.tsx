@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCourses, CourseInterface } from "../../store/courses";
 import { ClassroomInterface } from "../../store/classrooms";
-import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Box, Typography, List, ListItem, ListItemText, IconButton, SelectChangeEvent, OutlinedInput, Checkbox, Snackbar } from '@mui/material';
+import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Box, Typography, List, ListItem, ListItemText, IconButton, SelectChangeEvent, OutlinedInput, Checkbox, Snackbar, Stack, Card, CardContent } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HomeIcon from '@mui/icons-material/Home';
 import { FixedSizeList as VirtualizedList } from 'react-window';
 import { useNavigate } from 'react-router-dom';
 
@@ -78,12 +80,11 @@ export default function NewCourse() {
 
     const handleSaveCourse = () => {
         dispatch(setCourses([...courses, course]));
-        // Add course to the classroom's course list and students' course list
-        // ...additional logic...
+        
         setOpenSnackbar(true);
         setTimeout(() => {
             navigate('/');
-        }, 2000); // Redirect after 2 seconds
+        }, 250); 
     };
 
     const handleCloseSnackbar = () => {
@@ -188,104 +189,117 @@ export default function NewCourse() {
     };
 
     return (
-        <Box sx={{ p: 3, flexGrow: 1 }}>
-            <Typography variant="h4" gutterBottom color='primary'>New Course</Typography>
-            <TextField
-                label="Course Code"
-                name="Course"
-                value={course.Course}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="Instructor"
-                name="Lecturer"
-                value={course.Lecturer}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-            />
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Students</InputLabel>
-                <Select
-                    multiple
-                    value={selectedStudents}
-                    onChange={handleStudentSelectChange}
-                    input={<OutlinedInput label="Students" />}
-                    renderValue={(selected) => selected.join(', ')}
-                >
-                    <VirtualizedList
-                        height={400}
-                        width="100%"
-                        itemSize={46}
-                        itemCount={Array.from(new Set(courses.flatMap(course => course.Students))).length}
-                    >
-                        {renderStudent}
-                    </VirtualizedList>
-                </Select>
-            </FormControl>
-            <Button onClick={handleAddStudents} variant="contained" fullWidth >Add Students</Button>
-            <List>
-                {course.Students.map((student) => (
-                    <ListItem key={`${course.Course}-${student}`} secondaryAction={
-                        <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveStudent(student)}>
-                            <DeleteIcon />
+        <Box sx={{ padding: 3, maxWidth: 800, margin: '0 auto' }}>
+            <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+                <CardContent>
+                    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                        <IconButton onClick={() => navigate(-1)}>
+                            <ArrowBackIcon />
                         </IconButton>
-                    }>
-                        <ListItemText primary={student} />
-                    </ListItem>
-                ))}
-            </List>
-            <FormControl fullWidth margin="normal" disabled={selectedStudents.length === 0}>
-                <InputLabel>Time to Start</InputLabel>
-                <Select
-                    value={course.TimeToStart}
-                    onChange={(e) => setCourse({ ...course, TimeToStart: e.target.value as string })}
-                >
-                    {getAvailableTimes().map((time) => (
-                        <MenuItem key={time} value={time}>
-                            {time}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal" disabled={!course.TimeToStart}>
-                <InputLabel>Duration (Lecture Hours)</InputLabel>
-                <Select
-                    value={course.DurationInLectureHours}
-                    onChange={(e) => setCourse({ ...course, DurationInLectureHours: e.target.value as string })}
-                >
-                    {getAvailableDurations().map((duration) => (
-                        <MenuItem key={duration} value={duration}>
-                            {duration}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal" disabled={!course.DurationInLectureHours}>
-                <InputLabel>Classroom</InputLabel>
-                <Select
-                    value={course.Classroom}
-                    onChange={handleSelectChange}
-                >
-                    {getAvailableClassrooms().map((classroom) => (
-                        <MenuItem key={classroom.Classroom} value={classroom.Classroom}>
-                            {classroom.Classroom} (Capacity: {classroom.Capacity})
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                        <IconButton onClick={() => navigate("/")}>
+                            <HomeIcon />
+                        </IconButton>
+                    </Stack>
+                    
+                    <Typography variant="h4" gutterBottom color='primary'>New Course</Typography>
+                    <TextField
+                        label="Course Code"
+                        name="Course"
+                        value={course.Course}
+                        onChange={handleInputChange}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Instructor"
+                        name="Lecturer"
+                        value={course.Lecturer}
+                        onChange={handleInputChange}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Students</InputLabel>
+                        <Select
+                            multiple
+                            value={selectedStudents}
+                            onChange={handleStudentSelectChange}
+                            input={<OutlinedInput label="Students" />}
+                            renderValue={(selected) => selected.join(', ')}
+                        >
+                            <VirtualizedList
+                                height={400}
+                                width="100%"
+                                itemSize={46}
+                                itemCount={Array.from(new Set(courses.flatMap(course => course.Students))).length}
+                            >
+                                {renderStudent}
+                            </VirtualizedList>
+                        </Select>
+                    </FormControl>
+                    <Button onClick={handleAddStudents} variant="contained" fullWidth >Add Students</Button>
+                    <List>
+                        {course.Students.map((student) => (
+                            <ListItem key={`${course.Course}-${student}`} secondaryAction={
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveStudent(student)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            }>
+                                <ListItemText primary={student} />
+                            </ListItem>
+                        ))}
+                    </List>
+                    <FormControl fullWidth margin="normal" disabled={selectedStudents.length === 0}>
+                        <InputLabel>Time to Start</InputLabel>
+                        <Select
+                            value={course.TimeToStart}
+                            onChange={(e) => setCourse({ ...course, TimeToStart: e.target.value as string })}
+                        >
+                            {getAvailableTimes().map((time) => (
+                                <MenuItem key={time} value={time}>
+                                    {time}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin="normal" disabled={!course.TimeToStart}>
+                        <InputLabel>Duration (Lecture Hours)</InputLabel>
+                        <Select
+                            value={course.DurationInLectureHours}
+                            onChange={(e) => setCourse({ ...course, DurationInLectureHours: e.target.value as string })}
+                        >
+                            {getAvailableDurations().map((duration) => (
+                                <MenuItem key={duration} value={duration}>
+                                    {duration}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin="normal" disabled={!course.DurationInLectureHours}>
+                        <InputLabel>Classroom</InputLabel>
+                        <Select
+                            value={course.Classroom}
+                            onChange={handleSelectChange}
+                        >
+                            {getAvailableClassrooms().map((classroom) => (
+                                <MenuItem key={classroom.Classroom} value={classroom.Classroom}>
+                                    {classroom.Classroom} (Capacity: {classroom.Capacity})
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-            <Button onClick={handleSaveCourse} variant="contained" color="primary" sx={{ mt: 3 }}
-                disabled={!course.Course || !course.Lecturer || !course.DurationInLectureHours || !course.TimeToStart || !course.Classroom || course.Students.length === 0}
-            >Save Course</Button>
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={2000}
-                onClose={handleCloseSnackbar}
-                message="Course saved successfully"
-            />
+                    <Button onClick={handleSaveCourse} variant="contained" color="primary" sx={{ mt: 3 }}
+                        disabled={!course.Course || !course.Lecturer || !course.DurationInLectureHours || !course.TimeToStart || !course.Classroom || course.Students.length === 0}
+                    >Save Course</Button>
+                    <Snackbar
+                        open={openSnackbar}
+                        autoHideDuration={2000}
+                        onClose={handleCloseSnackbar}
+                        message="Course saved successfully"
+                    />
+                </CardContent>
+            </Card>
         </Box>
     );
 }
