@@ -45,12 +45,33 @@ export default function DistributeClassroomsButton() {
     const handleDistributeClassrooms = () => {
         try {
             const classroomSchedules: Record<string, CourseInterface[]> = {};
+            const unassignedCourses: string[] = [];
 
-            const sortedCourses = [...allCourses].sort((a, b) =>
-                b.Students.length - a.Students.length
-            );
+            
+            const coursesToAssign = [...allCourses]
+                .filter(course => course.Classroom === "unknown")
+                .sort((a, b) => b.Students.length - a.Students.length);
 
-            sortedCourses.forEach(course => {
+        
+            if (coursesToAssign.length === 0) {
+                setSnackbar({
+                    open: true,
+                    message: "No courses require classroom assignment"
+                });
+                return;
+            }
+
+           
+            allCourses.forEach(course => {
+                if (course.Classroom !== "unknown") {
+                    if (!classroomSchedules[course.Classroom]) {
+                        classroomSchedules[course.Classroom] = [];
+                    }
+                    classroomSchedules[course.Classroom].push(course);
+                }
+            });
+
+            coursesToAssign.forEach(course => {
                 const suitableClassroom = classrooms
                     .filter(classroom => {
                         const hasCapacity = parseInt(classroom.Capacity) >= course.Students.length;
@@ -71,13 +92,17 @@ export default function DistributeClassroomsButton() {
                         classroom: suitableClassroom.Classroom
                     }));
                 } else {
-                    console.warn(`No suitable classroom found for course: ${course.Course}`);
+                    unassignedCourses.push(course.Course);
                 }
             });
 
+            const message = unassignedCourses.length > 0
+                ? `Still unassigned courses: ${unassignedCourses.join(', ')}`
+                : "All unassigned courses have been successfully assigned to classrooms";
+
             setSnackbar({
                 open: true,
-                message: "Classrooms successfully assigned to courses"
+                message: message
             });
         } catch (error) {
             console.error("An error occurred while arranging classrooms:", error);
@@ -100,7 +125,7 @@ export default function DistributeClassroomsButton() {
             </Button>
             <Snackbar
                 open={snackbar.open}
-                autoHideDuration={1000}
+                autoHideDuration={6000}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}
                 message={snackbar.message}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
