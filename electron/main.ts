@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -35,6 +35,7 @@ function createWindow() {
     },
   })
 
+  Menu.setApplicationMenu(null);
   win.maximize()
 
   // Test active push message to Renderer-process.

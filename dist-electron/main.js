@@ -1,65 +1,49 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
-import fs from "fs";
-createRequire(import.meta.url);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-process.env.APP_ROOT = path.join(__dirname, "..");
-const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
-let win;
-function createWindow() {
-  win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+import { app as t, BrowserWindow as r, ipcMain as i, Menu as m } from "electron";
+import { createRequire as d } from "node:module";
+import { fileURLToPath as f } from "node:url";
+import e from "node:path";
+import a from "fs";
+d(import.meta.url);
+const l = e.dirname(f(import.meta.url));
+process.env.APP_ROOT = e.join(l, "..");
+const s = process.env.VITE_DEV_SERVER_URL, _ = e.join(process.env.APP_ROOT, "dist-electron"), c = e.join(process.env.APP_ROOT, "dist");
+process.env.VITE_PUBLIC = s ? e.join(process.env.APP_ROOT, "public") : c;
+let o;
+function p() {
+  o = new r({
+    icon: e.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs")
+      preload: e.join(l, "preload.mjs")
     }
-  });
-  win.maximize();
-  win.webContents.on("did-finish-load", () => {
-    win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
-  });
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
-  } else {
-    win.loadFile(path.join(RENDERER_DIST, "index.html"));
-  }
+  }), m.setApplicationMenu(null), o.maximize(), o.webContents.on("did-finish-load", () => {
+    o == null || o.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
+  }), s ? o.loadURL(s) : o.loadFile(e.join(c, "index.html"));
 }
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-    win = null;
-  }
+t.on("window-all-closed", () => {
+  process.platform !== "darwin" && (t.quit(), o = null);
 });
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+t.on("activate", () => {
+  r.getAllWindows().length === 0 && p();
 });
-app.whenReady().then(createWindow);
-ipcMain.handle("read-courses-file", () => {
+t.whenReady().then(p);
+i.handle("read-courses-file", () => {
   try {
-    const filePath = path.join(app.getAppPath(), "..", "..", "..", "..", "data", "Courses.csv");
-    return fs.readFileSync(filePath, "utf8");
-  } catch (err) {
-    console.log("No Courses.csv file found in the local file system. Attempting to fetch from public/data/Courses.csv...");
-    return null;
+    const n = e.join(t.getAppPath(), "..", "..", "..", "..", "data", "Courses.csv");
+    return a.readFileSync(n, "utf8");
+  } catch {
+    return console.log("No Courses.csv file found in the local file system. Attempting to fetch from public/data/Courses.csv..."), null;
   }
 });
-ipcMain.handle("read-classrooms-file", () => {
+i.handle("read-classrooms-file", () => {
   try {
-    const filePath = path.join(app.getAppPath(), "..", "..", "..", "..", "data", "ClassroomCapacity.csv");
-    return fs.readFileSync(filePath, "utf8");
-  } catch (err) {
-    console.log("No ClassroomCapacity.csv file found in the local file system. Attempting to fetch from public/data/ClassroomCapacity.csv...");
-    return null;
+    const n = e.join(t.getAppPath(), "..", "..", "..", "..", "data", "ClassroomCapacity.csv");
+    return a.readFileSync(n, "utf8");
+  } catch {
+    return console.log("No ClassroomCapacity.csv file found in the local file system. Attempting to fetch from public/data/ClassroomCapacity.csv..."), null;
   }
 });
 export {
-  MAIN_DIST,
-  RENDERER_DIST,
-  VITE_DEV_SERVER_URL
+  _ as MAIN_DIST,
+  c as RENDERER_DIST,
+  s as VITE_DEV_SERVER_URL
 };
