@@ -19,9 +19,8 @@ export function ClassroomInfo({ classroom }: { classroom: ClassroomProps }) {
     const totalCourses = classroomCourses.length;
     const totalHours = classroomCourses.reduce((sum, course) => 
         sum + parseInt(course.DurationInLectureHours), 0);
-    
-    // Calculate available hours (assuming 40 hours per week maximum)
-    const availableHours = 40 - totalHours;
+
+    const availableHours = 91 - totalHours;
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

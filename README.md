@@ -49,23 +49,6 @@ This project provides a comprehensive solution for educational institutions to m
 
 ## Usage Examples
 
-### Adding a New Course
-
-1. Click the "New Course" button in the top bar
-2. Fill in the course details:
-    ```typescript
-    {
-      Course Code: "SE302",
-      Instructor: "İlker Korkmaz",
-      Students: ["Student1", "Student2"],
-      TimeToStart: "Monday 08:30", 
-      DurationInLectureHours: "3",
-      Classroom: "C201"
-    }
-    ```
-
-![New Course Page](src/assets/newcoursepage.png)
-
 ### Importing Data 
 
 The system requires two CSV files for initialization:
@@ -95,6 +78,24 @@ C201;35
    - Check classroom capacities
    - Verify schedule conflicts
    - Assign optimal classrooms
+
+### Adding a New Course
+
+1. Click the "New Course" button in the top bar
+2. Fill in the course details:
+    ```typescript
+    {
+      Course Code: "SE302",
+      Instructor: "İlker Korkmaz",
+      Students: ["Student1", "Student2"],
+      TimeToStart: "Monday 08:30", 
+      DurationInLectureHours: "3",
+      Classroom: "C201"
+    }
+    ```
+
+![New Course Page](src/assets/newcoursepage.png)
+
 
 ## Getting Started
 This project provides a template to get started with React, TypeScript, Vite, and Electron. It includes HMR (Hot Module Replacement) and some ESLint rules for a minimal setup.
