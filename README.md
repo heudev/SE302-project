@@ -86,7 +86,7 @@ Classroom;Capacity
 C201;35
 ```
 
-![import button](src/assets/import.png)
+![import button](src/assets/import.PNG)
 
 ### Auto-Distributing Classrooms
 
