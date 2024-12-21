@@ -2,92 +2,131 @@
 
 
 
-The project is a standalone desktop application that can handle course scheduling and maintaining process. It enables the user to manage classrooms, handle course schedules, inspect weekly schedules, and make further modifications easily
-
-## Features
-- **Import files:** The system supports data import via an import button, allowing users to upload Courses.csv and ClassroomCapacity.csv files. The imported files are processed, and their content is stored in IndexedDB.
-
-- **Classroom Assignment and Course Distribution:** Using the distribute button, users can create class schedules from the imported files without conflicts.
-
-- **Add New Courses:** It allows users to add events, such as new courses or project meetings, by searching for and selecting students and entering information through the new course page.
-
-- **Change Course Classrooms:** Enables users to change the classrooms of courses without issues related to classroom capacities directly from the course page.
-
-- **View Weekly Schedules:** Users can view predefined weekly schedules for any class, subject or student by clicking on any of them.
-
-- **Edit Student Courses:** By clicking on any student, the user can either remove courses assigned to that student or add a new course.
-
-- **Easy transition between pages:** Users can navigate between pages and view details by clicking on any student, class, or course information displayed.
-
-
-
-
+This project provides a comprehensive solution for educational institutions to manage their course scheduling process.It enables the user to manage classrooms, handle course schedules, inspect weekly schedules, and make further modifications easily.
 
 ![Home Page](src/assets/homepage.png)
 
+## Features
+
+### Course Management
+- View all courses and their details
+- Add new courses with:
+  - Course code
+  - Instructor name 
+  - Time slot
+  - Duration in lecture hours
+  - Student list
+- Assign/reassign classrooms to courses
+- View course schedules in a weekly timetable
 
 
+![Course Page](src/assets/course.png)
+&nbsp;
 
 
+### Classroom Management
+- View classroom capacities and schedules
+- Automatic classroom distribution based on:
+  - Room capacity vs student count
+  - Schedule conflicts
+  - Time availability
+- View classroom usage in weekly timetable
 
+
+![Classroom Page](src/assets/weeklytable.png)
+&nbsp;
+
+
+### Student Management  
+- View student schedules and enrollments
+- Add/remove students from courses
+- Check course conflicts for students
+- View total course hours per student
+
+![Student Page](src/assets/student.png)
+
+&nbsp;
+
+## Usage Examples
+
+### Adding a New Course
+
+1. Click the "New Course" button in the top bar
+2. Fill in the course details:
+    ```typescript
+    {
+      Course Code: "SE302",
+      Instructor: "İlker Korkmaz",
+      Students: ["Student1", "Student2"],
+      TimeToStart: "Monday 08:30", 
+      DurationInLectureHours: "3",
+      Classroom: "C201"
+    }
+    ```
+
+![New Course Page](src/assets/newcoursepage.png)
+
+### Importing Data 
+
+The system requires two CSV files for initialization:
+1. Click "Import" in the settings menu
+2. Select either:
+   - `ClassroomCapacity.csv` for classroom data
+   - `Courses.csv` for course data 
+
+CSV Format for Courses:
+```csv
+Course;TimeToStart;DurationInLectureHours;Lecturer;Students
+SE101;Monday 08:30;3;İlker Korkmaz;Student1;Student2
+```
+
+CSV Format for Classrooms:
+```csv
+Classroom;Capacity  
+C201;35
+```
+
+![import button](src/assets/import.png)
+
+### Auto-Distributing Classrooms
+
+1. Click "Distribute" in the settings menu
+2. System will automatically:
+   - Check classroom capacities
+   - Verify schedule conflicts
+   - Assign optimal classrooms
 
 ## Getting Started
-
 This project provides a template to get started with React, TypeScript, Vite, and Electron. It includes HMR (Hot Module Replacement) and some ESLint rules for a minimal setup.
 
-### Prerequisites
+Ensure you have Node.js (>= 14.x) and either npm or yarn installed.
 
-- Node.js (>= 14.x)
-- npm or yarn
+1. Install dependencies:
+    ```bash
+    npm install
+    ```
 
-### Installation
+2. Run in development:
+    ```bash
+    npm run dev
+    ```
 
-Clone the repository and install dependencies:
+3. Build for production:
+    ```bash
+    npm run build
+    ```
 
-```sh
-git clone <repository-url>
-cd <repository-directory>
-npm install
-```
 
-### Starting the Development Server
-
-To start the development server:
-
-```sh
-npm run dev
-```
-
-### Starting the Electron Application
-
-To start the Electron application:
-
-```sh
-npm run electron:dev
-```
-
-### Building for Production
-
-To build the project for production:
-
-```sh
-npm run build
-```
-
-### Packaging the Electron Application
-
-To package the Electron application:
-
-```sh
-npm run electron:build
-```
-
-## Technologies Used
+## Technologies 
 
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/)
 - [Electron](https://www.electronjs.org/)
+- [Material-UI](https://mui.com/material-ui/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- IndexedDB
+
 
 ## Documents
 [Link to the Requirements Document(PDF)](src/docs/SE302RequirementsDocumentTeamNo2.pdf)
