@@ -126,7 +126,7 @@ export function WeeklyTable({ selectedCourses }: WeeklyTableProps) {
                                             <strong>
                                                 {day[rowIndex].course}
                                             </strong>
-                                            <div style={{ color: '#757575', fontSize: '0.8rem' }}>
+                                            <div style={{ color: '#757575', fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
                                                 {day[rowIndex].lecturer}
                                             </div>
                                             <div style={{ color: '#757575', fontSize: '0.6rem' }}>

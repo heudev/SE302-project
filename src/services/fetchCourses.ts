@@ -68,7 +68,9 @@ export const parseCsvData = (data: string): Course[] => {
         delimiter: ";",
         transform: (value) => value.trim(),
         complete: (results) => {
-            courses = (results.data as unknown as Record<string, string>[]).map((row: Record<string, string>) => {
+            courses = (results.data as unknown as Record<string, string>[]).filter(row => {
+                return Object.values(row).some(value => value.trim() !== "");
+            }).map((row: Record<string, string>) => {
                 const courseData: Course = {
                     Course: row.Course,
                     TimeToStart: row.TimeToStart,

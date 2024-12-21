@@ -24,7 +24,7 @@ const fetchClassrooms = async () => {
 
 const checkDatabaseExists = async (dbName: string) => {
     if (!indexedDB.databases) {
-        console.log("Tarayıcı indexedDB.databases() API'sini desteklemiyor.");
+        console.log("The browser does not support indexedDB.databases() API");
         return false;
     }
 
@@ -62,7 +62,9 @@ export const parseCsvData = (data: string): Classroom[] => {
     Papa.parse<Classroom>(data, {
         header: true,
         complete: (results) => {
-            classrooms = results.data;
+            classrooms = results.data.filter(row => {
+                return Object.values(row).some(value => value && value.trim() !== "");
+            });
         },
         error: () => {
             throw new Error("An error occurred while parsing the CSV data.");
@@ -70,7 +72,6 @@ export const parseCsvData = (data: string): Classroom[] => {
     });
     return classrooms;
 };
-
 const fetchFromPublic = async (): Promise<Classroom[]> => {
     const response = await fetch('/data/ClassroomCapacity.csv');
     if (!response.ok) {

@@ -54,14 +54,18 @@ export default function Courses() {
                                     onClick={() => handleCourseClick(course.Course)}
                                 >
                                     {/* Left side */}
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                        <Tooltip title={`Duration in lecture hours`} arrow>
-                                            <Chip
-                                                className='me-2'
-                                                color="secondary"
-                                                label={course.DurationInLectureHours}
-                                            />
-                                        </Tooltip>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                                        <Box sx={{ display: 'flex'}}
+                                        >
+                                            <Tooltip title={`Duration in lecture hours`} arrow>
+                                                <Chip
+                                                    className='me-2'
+                                                    color="secondary"
+                                                    label={course.DurationInLectureHours}
+                                                    sx={{ minWidth: '50px'}}
+                                                />
+                                            </Tooltip>
+                                        </Box>
                                         <ListItemText
                                             primary={course.Course}
                                             secondary={course.Lecturer}
